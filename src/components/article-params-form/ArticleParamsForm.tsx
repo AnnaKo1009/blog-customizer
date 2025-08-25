@@ -29,7 +29,7 @@ type ArticleProps = {
 
 export const ArticleParamsForm = (props: ArticleProps) => {
 	// состояние открытия/закрытия сайдбара 
-	const [isOpen, setIsOpen] = useState(false);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	// ссылка на DOM-элемент сайдбара
 	const sidebarRef = useRef<HTMLFormElement>(null);
 
@@ -38,20 +38,23 @@ export const ArticleParamsForm = (props: ArticleProps) => {
 	
 	// переключает состояние открытия
 	const handleToggle = () => {
-		setIsOpen(!isOpen);
+		setIsMenuOpen(!isMenuOpen);
 	};
 
 	// закрывает сайдбар
 	const handleClose = () => {
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
 	// клик вне сайдбара
 	useEffect(() => {
+		if (!isMenuOpen) {
+			return;
+		}
 		const handleClickOutside = (event: MouseEvent) => {
 			if (sidebarRef.current &&
 				!sidebarRef.current.contains(event.target as Node) &&
-				isOpen) {
+				isMenuOpen) {
 				handleClose();
 			}
 		};
@@ -60,7 +63,7 @@ export const ArticleParamsForm = (props: ArticleProps) => {
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, [isOpen]);
+	}, [isMenuOpen]);
 
 	// обработчик изменений полей формы
 	const handleFieldChange = (field: keyof ArticleStateType) => (option: OptionType) => {
@@ -79,12 +82,12 @@ export const ArticleParamsForm = (props: ArticleProps) => {
 
 	return (
 		<>
-			<ArrowButton isOpen={isOpen} onClick={handleToggle} />
+			<ArrowButton isOpen={isMenuOpen} onClick={handleToggle} />
 			<aside
 				ref={sidebarRef}
 				className={clsx(
 					styles.container,
-					{ [styles.container_open]: isOpen }
+					{ [styles.container_open]: isMenuOpen }
 				)}>
 				<form className={styles.form} onSubmit={submitForm} ref={sidebarRef}>
 					<Text
